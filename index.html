@@ -969,7 +969,7 @@ html.sb-collapsed .sidebar{width:0;padding-left:0;padding-right:0;overflow:hidde
 @media screen and (min-width:1301px){
   #view-plan14.active{display:flex;flex-direction:column;flex:1;min-height:0;}
   #view-plan14 .p14{display:flex;flex-direction:column;flex:1;min-height:0;}
-  #view-plan14 .p14-head,#view-plan14 .p14-kpis,#view-plan14 .p14-narr,#view-plan14 .p14-tabs{flex:none;}
+  #view-plan14 .p14-head,#view-plan14 .p14-kpis,#view-plan14 .p14-ins,#view-plan14 .p14-tabs{flex:none;}
   #view-plan14 .p14-body{flex:1;min-height:0;display:flex;flex-direction:column;}
   #view-plan14 .p14-body>.p14-grid2,#view-plan14 .p14-body>.p14-two,#view-plan14 .p14-body>.p14-card{flex:1;min-height:0;}
   #view-plan14 .p14-card{display:flex;flex-direction:column;min-height:0;}
@@ -982,12 +982,132 @@ html.sb-collapsed .sidebar{width:0;padding-left:0;padding-right:0;overflow:hidde
 }
 @media (max-width:900px){.p14-kpis{grid-template-columns:repeat(2,minmax(0,1fr));}.p14-grid2,.p14-two{grid-template-columns:1fr;}}
 @media print{#view-plan14 .p14-scroll{overflow:visible !important;}}
+
+/* ===== chat + visitor ===== */
+.visit-line{white-space:normal;margin-top:auto;padding:12px 6px 2px;font-size:10.5px;line-height:1.5;color:var(--ink-soft);border-top:1px solid var(--line);}
+.visit-line b{color:var(--orange-500,#ff7a1a);font-weight:700;}
+.chat-fab{position:fixed;right:22px;bottom:22px;z-index:90;width:56px;height:56px;border-radius:18px;border:0;padding:0;background:linear-gradient(135deg,#ff8a2a,#e8590c);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 6px rgba(255,122,26,.18),0 8px 22px rgba(200,80,10,.35);transition:transform .15s;}
+.chat-fab:hover{transform:scale(1.06);} .chat-fab:focus-visible{outline:3px solid var(--orange-500,#ff7a1a);outline-offset:3px;}
+.chat-fab svg{width:26px;height:26px;} .chat-fab .spark{position:absolute;top:-4px;right:-5px;width:17px;height:17px;color:#ffc94d;}
+.chat-fab .cnt{position:absolute;bottom:-3px;left:-3px;min-width:20px;height:20px;padding:0 5px;border-radius:10px;background:var(--orange-500,#ff7a1a);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid var(--surface);}
+.chat-panel{position:fixed;right:22px;bottom:92px;z-index:91;width:370px;max-width:calc(100vw - 24px);height:min(560px,calc(100vh - 120px));display:none;flex-direction:column;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:16px;box-shadow:0 14px 40px rgba(20,33,61,.28);overflow:hidden;}
+.chat-panel.open{display:flex;}
+.chat-hd{display:flex;align-items:center;gap:10px;padding:12px 14px;background:linear-gradient(135deg,#6a47f5,#4b2fd8);color:#fff;}
+.chat-hd b{font-size:14px;display:block;} .chat-hd small{font-size:11px;opacity:.85;}
+.chat-hd button{margin-left:auto;background:rgba(255,255,255,.18);border:0;color:#fff;width:28px;height:28px;border-radius:8px;cursor:pointer;font-size:16px;}
+.chat-list{flex:1;min-height:0;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px;background:var(--surface-alt,#f4f7fc);}
+.chat-empty{margin:auto;text-align:center;color:var(--ink-soft);font-size:12.5px;line-height:1.6;padding:0 14px;}
+.chat-msg{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:8px 10px;font-size:12.5px;line-height:1.5;}
+.chat-msg .meta{display:flex;gap:8px;align-items:baseline;margin-bottom:2px;} .chat-msg .meta b{font-size:12px;color:var(--navy-900);} html.dark-theme .chat-msg .meta b{color:var(--ink);}
+.chat-msg .meta time{font-size:10.5px;color:var(--ink-soft);}
+.chat-msg .txt{white-space:pre-wrap;word-break:break-word;}
+.chat-msg .rp{margin-top:4px;background:none;border:0;padding:0;color:#5b3ee0;font:inherit;font-size:11.5px;font-weight:600;cursor:pointer;} html.dark-theme .chat-msg .rp{color:#b7a5ff;}
+.chat-replies{margin:8px 0 0 10px;padding-left:10px;border-left:2px solid #c9bdff;display:flex;flex-direction:column;gap:6px;}
+.chat-replies .chat-msg{background:var(--surface-alt,#f4f7fc);}
+.chat-ft{padding:10px 12px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:6px;background:var(--surface);}
+.chat-ft input,.chat-ft textarea{width:100%;box-sizing:border-box;font:inherit;font-size:13px;padding:7px 9px;border:1px solid var(--line);border-radius:9px;background:var(--surface);color:var(--ink);resize:none;}
+.chat-ft input:focus,.chat-ft textarea:focus{outline:2px solid #7a55ff;outline-offset:0;}
+.chat-ft .row{display:flex;gap:8px;align-items:flex-end;} .chat-ft textarea{flex:1;height:52px;}
+.chat-ft .send{height:36px;padding:0 14px;border:0;border-radius:9px;background:#5b3ee0;color:#fff;font:inherit;font-size:13px;font-weight:700;cursor:pointer;} .chat-ft .send:disabled{opacity:.5;cursor:default;}
+.chat-ft .rto{display:none;font-size:11.5px;background:#ece7ff;color:#3b27a8;border-radius:8px;padding:4px 8px;align-items:center;justify-content:space-between;gap:8px;} .chat-ft .rto.on{display:flex;} .chat-ft .rto button{border:0;background:none;cursor:pointer;color:inherit;font-size:14px;}
+.chat-note{font-size:10.5px;color:var(--ink-soft);line-height:1.4;}
+@media (max-width:900px){.visit-line{display:none;} .chat-fab{bottom:86px;right:14px;width:50px;height:50px;} .chat-panel{right:10px;bottom:146px;height:min(520px,calc(100vh - 170px));}}
+@media print{.chat-fab,.chat-panel{display:none !important;}}
+
+.p14-ins{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:10px;}
+.p14-in{display:flex;gap:10px;align-items:center;padding:8px 12px;border-radius:12px;background:var(--surface-alt);border:1px solid var(--line);}
+.p14-in i{font-style:normal;flex:none;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:#fff;background:#3b82f6;}
+.p14-in i.up{background:#00a651;} .p14-in i.dn{background:#e8590c;} .p14-in i.fl{background:#14213d;} html.dark-theme .p14-in i.fl{background:#3b4a78;}
+.p14-in b{display:block;font-size:13px;color:var(--navy-900);} html.dark-theme .p14-in b{color:var(--ink);}
+.p14-in span{font-size:11.5px;color:var(--ink-soft);line-height:1.35;display:block;}
+.p14-kpi{border-top:3px solid var(--kc,#14213d) !important;border-radius:10px !important;}
+.p14-kpi em{font-style:normal;font-weight:700;color:var(--kc);margin-left:2px;}
+.p14-auto{margin-left:auto;align-self:center;font-size:11px;color:var(--ink-soft);}
+.p14-tbl tr.gh td{background:var(--surface-alt);font-size:11.5px;font-weight:700;color:var(--navy-900);padding:6px 8px;border-bottom:0;position:sticky;} html.dark-theme .p14-tbl tr.gh td{color:var(--ink);}
+.p14-tbl td.nm{min-width:0;max-width:0;width:42%;padding:3px 6px;} .p14-tbl .nm1{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.p14-id.sm{font-size:10px;padding:0 5px;}
+.p14-tbl td.hm{border:0;border-left:2px solid var(--surface);border-bottom:2px solid var(--surface);border-radius:5px;font-size:10.5px;font-weight:600;height:22px;padding:0 1px;}
+@media (max-width:900px){.p14-ins{grid-template-columns:1fr;}.p14-auto{display:none;}}
+
+/* ===== p14: align look with Strategic Vision cards ===== */
+.p14-card,.p14-kpi,.p14-in{background-color:var(--surface);background-image:linear-gradient(165deg,var(--ac-soft,rgba(31,58,122,.07)) 0%,var(--surface) 55%);border:1px solid var(--line);border-top:3px solid var(--ac,var(--navy-900)) !important;border-radius:var(--radius-lg,16px) !important;box-shadow:none;}
+.p14-card{--ac:#1f3a7a;padding:14px 16px;}
+.p14-card h3{font-size:14px;font-weight:700;margin:0 0 8px;letter-spacing:.1px;}
+.p14-kpi{--ac:var(--kc,#1f3a7a);--ac-soft:color-mix(in srgb,var(--kc,#1f3a7a) 11%,transparent);padding:10px 14px;}
+.p14-kpi:hover{box-shadow:var(--shadow-lift);transform:translateY(-2px);border-color:var(--line);}
+.p14-kpi b{font-size:26px !important;color:var(--kc,#1f3a7a);font-weight:700;} html.dark-theme .p14-kpi b{color:color-mix(in srgb,var(--kc,#8aa4ff) 80%,#fff);}
+.p14-kpi span{font-size:12px;color:var(--ink-soft);}
+.p14-in{padding:10px 14px;--ac:#1f3a7a;} .p14-in:nth-child(1){--ac:#00a651;--ac-soft:rgba(0,166,81,.10);} .p14-in:nth-child(2){--ac:#ff7a1a;--ac-soft:rgba(255,122,26,.10);} .p14-in:nth-child(3){--ac:#3b82f6;--ac-soft:rgba(59,130,246,.10);}
+.p14-tbl th{background:transparent;border-bottom:1px solid var(--line);font-size:11px;}
+.p14-tbl td{border-bottom:1px solid color-mix(in srgb,var(--line) 55%,transparent);}
+.p14-tbl tr.gh td{background:transparent;padding:10px 6px 4px;border-bottom:0;}
+.p14-tbl td.hm{border-radius:6px;font-weight:600;}
+.p14-li{background:var(--surface);border:1px solid var(--line);border-left-width:4px;border-radius:10px;box-shadow:none;}
+.p14-chip{font-weight:600;}
+.p14-chartcol .p14-card{--ac:#1f3a7a;} .p14-chartcol .p14-card:nth-child(2){--ac:#ff7a1a;--ac-soft:rgba(255,122,26,.08);}
+
+.p14-hmh{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:6px;} .p14-hmh h3{margin:0 !important;}
+.p14-lg{display:flex;gap:10px;flex-wrap:wrap;font-size:11px;color:var(--ink-soft);} .p14-lg .lg{display:inline-flex;align-items:center;gap:4px;} .p14-lg i{width:12px;height:12px;border-radius:4px;display:inline-block;}
+.p14-hmt{border-collapse:separate;border-spacing:0;table-layout:fixed;}
+.p14-hmt th{background:var(--surface);position:sticky;z-index:3;text-align:center;font-size:11px;color:var(--ink-soft);padding:4px 0;border:0;}
+.p14-hmt tr.yr th{top:0;} .p14-hmt tr:nth-child(2) th{top:26px;}
+.p14-hmt th.nmh{text-align:left;width:36%;vertical-align:bottom;padding-left:6px;font-size:11.5px;}
+.p14-hmt th.yh{font-weight:700;color:var(--navy-900);border-bottom:2px solid var(--line);padding-bottom:3px;} html.dark-theme .p14-hmt th.yh{color:var(--ink);}
+.p14-hmt th.qh{font-weight:600;border-bottom:1px solid var(--line);} .p14-hmt th.qh.cur{color:#e8590c;font-weight:800;}
+.p14-hmt th.avh{width:62px;vertical-align:bottom;font-weight:700;}
+.p14-hmt td{border:0 !important;padding:2px 2px;}
+.p14-hmt tr.kr:hover td{background:color-mix(in srgb,var(--ac,#1f3a7a) 7%,transparent);}
+.p14-hmt td.nm{width:36%;max-width:none;padding:3px 6px;}
+.p14-hmt .nm2{display:flex;gap:6px;align-items:flex-start;font-size:12px;line-height:1.3;} .p14-hmt .nm2 span:last-child{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.p14-hmt .nm2 .p14-id{flex:none;margin:1px 0 0;}
+.p14-hmt td.hm{padding:2px 1.5px;text-align:center;}
+.p14-hmt .cell{display:flex;align-items:center;justify-content:center;height:26px;border-radius:7px;font-size:11px;font-weight:700;}
+.p14-hmt td.hm.cur .cell{box-shadow:0 0 0 2px rgba(232,89,12,.55);}
+.p14-hmt td.av{text-align:center;white-space:nowrap;padding-left:6px;}
+.p14-hmt .avc{display:inline-block;min-width:38px;padding:2px 7px;border-radius:999px;font-size:11px;font-weight:700;color:#14213d;background:color-mix(in srgb,var(--c) 30%,var(--surface));border:1px solid color-mix(in srgb,var(--c) 70%,transparent);} .p14-hmt .avc.na{background:none;border:0;color:var(--ink-soft);} html.dark-theme .p14-hmt .avc{color:var(--ink);}
+.p14-hmt td.av small{font-size:9px;margin-left:3px;} .p14-hmt small.up{color:#00a651;} .p14-hmt small.dn{color:#e8590c;} .p14-hmt small.fl{color:var(--ink-soft);}
+.p14-hmt tr.gh td{padding:12px 6px 5px;border:0 !important;background:transparent;}
+.p14-hmt tr.gh .ghn{font-size:12.5px;font-weight:700;color:var(--navy-900);} html.dark-theme .p14-hmt tr.gh .ghn{color:var(--ink);}
+.p14-hmt tr.gh .gha{float:right;font-size:11px;color:var(--ink-soft);font-weight:600;}
+.p14-hmt tr.gh td::after{content:'';display:block;height:1px;background:var(--line);margin-top:6px;}
+
+.p14-zoom{display:inline-flex;align-items:center;gap:5px;margin-left:auto;border:1px solid var(--line);background:var(--surface);color:var(--ink-soft);border-radius:999px;padding:4px 10px;font:inherit;font-size:11.5px;font-weight:600;cursor:pointer;transition:.15s;}
+.p14-zoom svg{width:14px;height:14px;} .p14-zoom:hover{color:#e8590c;border-color:#e8590c;} .p14-zoom:focus-visible{outline:2px solid #e8590c;outline-offset:2px;}
+.p14-hmh .p14-lg+.p14-zoom{margin-left:0;}
+.p14-card.p14-full{position:fixed !important;inset:3vh 3vw;z-index:120;display:flex !important;flex-direction:column;box-shadow:0 0 0 100vmax rgba(10,20,40,.62),0 20px 60px rgba(0,0,0,.4) !important;background-color:var(--surface);flex:none !important;min-height:0;padding:18px 22px;}
+.p14-card.p14-full .p14-chart{flex:1;height:auto;min-height:0;}
+.p14-card.p14-full .p14-scroll{flex:1;min-height:0;}
+.p14-card.p14-full h3{font-size:17px;}
+.p14-card.p14-full .p14-hmt .cell{height:32px;font-size:12.5px;} .p14-card.p14-full .p14-hmt .nm2{font-size:13px;} .p14-card.p14-full .p14-hmt th{font-size:12px;}
+body.p14-lock .chat-fab{display:none;}
+
+/* ===== heatmap: soft & cute ===== */
+.p14-hmt .cell{width:30px;height:30px;margin:0 auto;border-radius:50%;font-size:11px;font-weight:700;box-shadow:0 1px 3px rgba(20,33,61,.18),inset 0 -2px 0 rgba(0,0,0,.06);transition:transform .12s;}
+.p14-hmt .cell:hover{transform:scale(1.18);}
+.p14-hmt td.hm.cur .cell{box-shadow:0 1px 3px rgba(20,33,61,.18),inset 0 -2px 0 rgba(0,0,0,.06);}
+.p14-hmt td.hm.cur{background:rgba(255,122,26,.08);}
+.p14-hmt tr.kr:hover td.hm.cur{background:rgba(255,122,26,.14);}
+.p14-hmt tr.kr td{border-bottom:1px dashed color-mix(in srgb,var(--line) 70%,transparent) !important;padding-top:4px;padding-bottom:4px;}
+.p14-hmt tr.kr:hover td{background:color-mix(in srgb,#ffb066 10%,transparent);}
+.p14-hmt tr.kr:hover td.hm.cur{background:rgba(255,122,26,.14);}
+.p14-hmt .nm2{color:var(--ink);font-size:12px;} 
+.p14-hmt .p14-id.sm{background:#e6ecfa;color:#1f3a7a;font-weight:700;border-radius:999px;padding:1px 8px;} html.dark-theme .p14-hmt .p14-id.sm{background:#26345e;color:#cfd9ff;}
+.p14-hmt tr.gh td{padding:14px 8px 6px;background:none;} .p14-hmt tr.gh td::after{display:none;}
+.p14-hmt tr.gh td{background:linear-gradient(90deg,color-mix(in srgb,var(--ac,#1f3a7a) 9%,transparent),transparent 70%);border-radius:12px !important;}
+.p14-hmt tr.gh .p14-id{background:#ff7a1a;color:#fff;border-radius:999px;padding:2px 10px;}
+.p14-hmt tr.gh .gha{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:1px 10px;}
+.p14-hmt th.qh.cur{background:#ff7a1a;color:#fff;border-radius:999px;padding:2px 0;}
+.p14-hmt th.yh{border-bottom:2px solid #ffd9bd;}
+.p14-hmt .avc{box-shadow:0 1px 2px rgba(20,33,61,.1);}
+.p14-lg i{border-radius:50%;}
+.p14-card.p14-full .p14-hmt .cell{width:36px;height:36px;font-size:13px;}
 </style>
 
 
 
 <style id="protect-css">
 html,body,*{-webkit-user-select:none !important;user-select:none !important;-webkit-touch-callout:none !important;}
+input,textarea{-webkit-user-select:text !important;user-select:text !important;}
 img,canvas,svg{-webkit-user-drag:none;user-drag:none;}
 #btn-export,#btn-print{display:none !important;}
 @media print{html,body{background:#fff !important;} body > *{display:none !important;} body::before{content:'เอกสารนี้ไม่อนุญาตให้พิมพ์หรือบันทึกเป็น PDF';display:block;padding:40px;font:600 18px sans-serif;color:#1f3a6e;}}
@@ -1316,6 +1436,7 @@ function renderSidebar(){
         </div>
       </div>
     </div>
+    <div class="visit-line" data-visit>${visitHtml()}</div>
   </div>`;
 }
 
@@ -3005,31 +3126,45 @@ function renderPlan14(){
   const first4 = qv.slice(0,4).reduce((a,x)=>a+x.avg,0)/Math.min(4,qv.length), last4 = qv.slice(-4).reduce((a,x)=>a+x.avg,0)/Math.min(4,qv.length);
   const trendTxt = last4-first4>2 ? 'ดีขึ้น' : (last4-first4<-2 ? 'ลดลง' : 'ทรงตัว');
   const everFull = list.filter(m=>m.reached>0).length;
-  const narr = `วิเคราะห์ตลอดแผน 13 (${DATA.quarter_order[0]} – ${L}, ${DATA.quarter_order.length} ไตรมาส) จากตัวชี้วัดที่ไม่ซ้ำกัน <b>${list.length}</b> ตัว: ค่าเฉลี่ย % สำเร็จทุกไตรมาส <b>${allAvg.toFixed(1)}%</b> สูงสุด ${best.avg.toFixed(1)}% (${best.q}) ต่ำสุด ${worst.avg.toFixed(1)}% (${worst.q}) เฉลี่ย 4 ไตรมาสแรก ${first4.toFixed(1)}% เทียบ 4 ไตรมาสล่าสุด ${last4.toFixed(1)}% (<b>${trendTxt}</b>) · มี <b>${everFull}</b> ตัวที่เคยถึงเป้า (≥100%) อย่างน้อย 1 ไตรมาส ภาพรวม <b>${strong.length}</b> ตัวมีผลงานเด่น (เฉลี่ย 4 ไตรมาสล่าสุด ≥90% และไตรมาสล่าสุด ≥90%) และ <b>${weak.length}</b> ตัวต้องเร่งปรับปรุง (&lt;80%) ส่วน <b>${rc.refine}</b> ตัวควรทบทวนนิยามหรือคุณภาพข้อมูลก่อนนำไปใช้ในแผน 14
-    <span style="color:var(--ink-soft)">— ข้อเสนอสร้างอัตโนมัติจากเกณฑ์ตัวเลขของทุกไตรมาส เพื่อประกอบการพิจารณาของผู้บริหารร่วมกับบริบทเชิงนโยบาย</span>`;
+  const ins = `<div class="p14-ins">
+    <div class="p14-in"><i class="${last4-first4>2?'up':(last4-first4<-2?'dn':'fl')}">${last4-first4>2?'↑':(last4-first4<-2?'↓':'→')}</i><div><b>แนวโน้ม${trendTxt}</b><span>${first4.toFixed(1)}% → ${last4.toFixed(1)}% (4 ไตรมาสแรก → 4 ไตรมาสล่าสุด)</span></div></div>
+    <div class="p14-in"><i class="fl">◆</i><div><b>ช่วงผลงาน ${DATA.quarter_order.length} ไตรมาส</b><span>สูงสุด ${best.avg.toFixed(1)}% (${best.q}) · ต่ำสุด ${worst.avg.toFixed(1)}% (${worst.q})</span></div></div>
+    <div class="p14-in"><i class="up">★</i><div><b>เด่น ${strong.length} · ต้องเร่ง ${weak.length}</b><span>${everFull} ตัวเคยถึงเป้า 100% อย่างน้อย 1 ไตรมาส</span></div></div>
+  </div>`;
 
   const kpis = `<div class="p14-kpis">
-    <button type="button" class="p14-kpi" data-p14kpi="all" title="คลิกเพื่อดูรายละเอียด"><b>${list.length}</b><span>ตัวชี้วัด (ไม่ซ้ำ)</span></button>
-    <button type="button" class="p14-kpi" data-p14kpi="avg" title="คลิกเพื่อดูรายละเอียด"><b>${p14Pct(allAvg)}</b><span>เฉลี่ยทุกไตรมาส</span></button>
-    <button type="button" class="p14-kpi" data-p14kpi="raise" title="คลิกเพื่อดูรายละเอียด"><b>${rc.raise}</b><span>ไปต่อ · ยกระดับเป้า</span></button>
-    <button type="button" class="p14-kpi" data-p14kpi="keep" title="คลิกเพื่อดูรายละเอียด"><b>${rc.keep}</b><span>ไปต่อ · คงเป้า</span></button>
-    <button type="button" class="p14-kpi" data-p14kpi="fix" title="คลิกเพื่อดูรายละเอียด"><b>${rc.fix}</b><span>ไปต่อ · เร่งรัดแผนปฏิบัติ</span></button>
-    <button type="button" class="p14-kpi" data-p14kpi="refine" title="คลิกเพื่อดูรายละเอียด"><b>${rc.refine}</b><span>ทบทวนนิยาม/ข้อมูล</span></button>
+    <button type="button" class="p14-kpi" data-p14kpi="all" style="--kc:#14213d" title="คลิกเพื่อดูรายละเอียด"><b>${list.length}</b><span>ตัวชี้วัด (ไม่ซ้ำ)</span></button>
+    <button type="button" class="p14-kpi" data-p14kpi="avg" style="--kc:#ff7a1a" title="คลิกเพื่อดูรายละเอียด"><b>${p14Pct(allAvg)}</b><span>เฉลี่ยทุกไตรมาส</span></button>
+    <button type="button" class="p14-kpi" data-p14kpi="raise" style="--kc:#00a651" title="คลิกเพื่อดูรายละเอียด"><b>${rc.raise}</b><span>ไปต่อ · ยกระดับเป้า <em>${Math.round(rc.raise/list.length*100)}%</em></span></button>
+    <button type="button" class="p14-kpi" data-p14kpi="keep" style="--kc:#3b82f6" title="คลิกเพื่อดูรายละเอียด"><b>${rc.keep}</b><span>ไปต่อ · คงเป้า <em>${Math.round(rc.keep/list.length*100)}%</em></span></button>
+    <button type="button" class="p14-kpi" data-p14kpi="fix" style="--kc:#ffa21f" title="คลิกเพื่อดูรายละเอียด"><b>${rc.fix}</b><span>ไปต่อ · เร่งรัดแผนปฏิบัติ <em>${Math.round(rc.fix/list.length*100)}%</em></span></button>
+    <button type="button" class="p14-kpi" data-p14kpi="refine" style="--kc:#7a55ff" title="คลิกเพื่อดูรายละเอียด"><b>${rc.refine}</b><span>ทบทวนนิยาม/ข้อมูล <em>${Math.round(rc.refine/list.length*100)}%</em></span></button>
   </div>`;
 
   const tabs = [['overview','ภาพรวมทุกไตรมาส'],['gap','Gap · จุดแข็ง/จุดอ่อน'],['plan','ข้อเสนอแผน 14']].map(([k,t])=>`<button type="button" class="sub-tab${tab===k?' active':''}" data-p14tab="${k}">${t}</button>`).join('');
 
   let body='';
   if(tab==='overview'){
-    const head = DATA.quarter_order.map(q=>`<th style="text-align:center;padding:6px 2px;font-size:10px">${q.replace('Q','Q').replace('-','<br>')}</th>`).join('');
-    const rows = list.map(m=>`<tr><td class="nm">${p14Name(m)}</td>${m.ser.map((v,i)=>{ const st=statusOf(v); return `<td class="hm" style="background:${colorFor(st.color)};color:${onFill(st.key)}" title="${m.k} · ${DATA.quarter_order[i]} · ${p14Pct(v)} · ${st.label}">${v===null?'–':Math.round(v)}</td>`; }).join('')}</tr>`).join('');
+    const QO = DATA.quarter_order, yrs=[]; QO.forEach(q=>{ const y=q.split('-')[1]; if(yrs.length&&yrs[yrs.length-1].y===y) yrs[yrs.length-1].n++; else yrs.push({y,n:1}); });
+    const yrRow = `<tr class="yr"><th rowspan="2" class="nmh">ตัวชี้วัด</th>${yrs.map(y=>`<th colspan="${y.n}" class="yh">${y.n>1?'พ.ศ. ':''}${y.y}</th>`).join('')}<th rowspan="2" class="avh">เฉลี่ย</th></tr>`;
+    const qRow = `<tr>${QO.map(q=>`<th class="qh${q===L?' cur':''}">${q.split('-')[0]}</th>`).join('')}</tr>`;
+    const gOrder = [...DATA.kr_order.map(k=>DATA.krs[k].group).filter((g,ix,a)=>a.indexOf(g)===ix), ...SO_ORDER, ...EF_ORDER];
+    const nCols = QO.length+2;
+    const avChip = (v)=>{ const st=statusOf(v); return v===null?'<span class="avc na">–</span>':`<span class="avc" style="--c:${colorFor(st.color)}">${v.toFixed(0)}%</span>`; };
+    const rows = gOrder.map(g=>{
+      const ms = list.filter(m=>m.rec.group===g); if(!ms.length) return '';
+      const gn = /^g\d/.test(g) ? GROUP_META[g].title : (g.toUpperCase()+' '+(GROUP_META[g]?GROUP_META[g].sub:''));
+      const av = ms.map(m=>m.avg).filter(v=>v!==null), ga = av.length? av.reduce((a,b)=>a+b,0)/av.length : null;
+      return `<tr class="gh"><td colspan="${nCols}"><span class="p14-id">${p14GroupLabel(g)}</span><span class="ghn">${escapeHtml(gn)}</span><span class="gha">เฉลี่ยกลุ่ม ${ga===null?'–':ga.toFixed(1)+'%'}</span></td></tr>` + ms.map(m=>`<tr class="kr"><td class="nm"><div class="nm2" title="${escapeHtml(m.k+' · '+cleanName(m.rec))}"><span class="p14-id sm">${m.k}</span><span>${escapeHtml(cleanName(m.rec))}</span></div></td>${m.ser.map((v,i)=>{ const st=statusOf(v); return `<td class="hm${QO[i]===L?' cur':''}"><span class="cell" style="background:${colorFor(st.color)};color:${onFill(st.key)}" title="${m.k} · ${QO[i]} · ${p14Pct(v)} · ${st.label}">${v===null?'':(v>=99.995?'✓':Math.round(v))}</span></td>`; }).join('')}<td class="av">${avChip(m.avg)}<small class="${m.delta===null?'':(m.delta>5?'up':(m.delta<-5?'dn':'fl'))}">${m.delta===null?'':(m.delta>5?'▲':(m.delta<-5?'▼':'●'))}</small></td></tr>`).join('');
+    }).join('');
+    const lg = [[100,'≥100'],[95,'90–99'],[85,'80–89'],[70,'61–79'],[30,'≤60'],[null,'ไม่มีข้อมูล']].map(([v,t])=>`<span class="lg"><i style="background:${colorFor(statusOf(v).color)}"></i>${t}</span>`).join('');
     body = `<div class="p14-grid2">
       <div class="p14-chartcol">
-        <div class="p14-card"><h3>ค่าเฉลี่ย % สำเร็จของทุกตัวชี้วัดรายไตรมาส</h3><div class="p14-chart"><canvas id="p14-line"></canvas></div></div>
-        <div class="p14-card"><h3>จำนวนตัวชี้วัดตามสถานะรายไตรมาส</h3><div class="p14-chart"><canvas id="p14-bar"></canvas></div></div>
+        <div class="p14-card"><div class="p14-hmh"><h3>ค่าเฉลี่ย % สำเร็จของทุกตัวชี้วัดรายไตรมาส</h3><button type="button" class="p14-zoom" data-p14zoom title="ขยายภาพใหญ่" aria-label="ขยายภาพใหญ่"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg><span>ขยาย</span></button></div><div class="p14-chart"><canvas id="p14-line"></canvas></div></div>
+        <div class="p14-card"><div class="p14-hmh"><h3>จำนวนตัวชี้วัดตามสถานะรายไตรมาส</h3><button type="button" class="p14-zoom" data-p14zoom title="ขยายภาพใหญ่" aria-label="ขยายภาพใหญ่"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg><span>ขยาย</span></button></div><div class="p14-chart"><canvas id="p14-bar"></canvas></div></div>
       </div>
-      <div class="p14-card"><h3>แผนที่ความร้อนรายตัวชี้วัด × ไตรมาส (% สำเร็จ, ตัดที่ 100)</h3>
-        <div class="p14-scroll"><table class="p14-tbl"><thead><tr><th>ตัวชี้วัด</th>${head}</tr></thead><tbody>${rows}</tbody></table></div></div>
+      <div class="p14-card"><div class="p14-hmh"><h3>แผนที่ผลการดำเนินงานรายตัวชี้วัด × ไตรมาส</h3><div class="p14-lg">${lg}<span class="lg" style="opacity:.8">✓ = ถึงเป้า</span></div><button type="button" class="p14-zoom" data-p14zoom title="ขยายภาพใหญ่" aria-label="ขยายภาพใหญ่"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg><span>ขยาย</span></button></div>
+        <div class="p14-scroll"><table class="p14-tbl p14-hmt"><thead>${yrRow}${qRow}</thead><tbody>${rows}</tbody></table></div></div>
     </div>`;
   } else if(tab==='gap'){
     const groups = [...DATA.kr_order.map(k=>DATA.krs[k].group).filter((g,i,a)=>a.indexOf(g)===i), ...SO_ORDER, ...EF_ORDER];
@@ -3075,8 +3210,8 @@ function renderPlan14(){
   }
   return `<section class="p14">
     <div class="p14-head"><div><h2 class="p14-title">ภาพรวม · สรุปผู้บริหารและประเมินแผน 13 สู่แผน 14</h2><div class="p14-sub">วิเคราะห์ทุกไตรมาส ${DATA.quarter_order[0]} – ${L} · Gap จุดแข็ง จุดอ่อน และข้อเสนอตัวชี้วัดสำหรับแผน 14</div></div></div>
-    ${kpis}<div class="p14-narr">${narr}</div>
-    <div class="p14-tabs">${tabs}</div><div class="p14-body">${body}</div>
+    ${kpis}${ins}
+    <div class="p14-tabs">${tabs}<span class="p14-auto">ข้อเสนอสร้างอัตโนมัติจากเกณฑ์ตัวเลขทุกไตรมาส ใช้ประกอบการพิจารณาร่วมกับบริบทเชิงนโยบาย</span></div><div class="p14-body">${body}</div>
   </section>`;
 }
 function drawPlan14Charts(){
@@ -3086,9 +3221,9 @@ function drawPlan14Charts(){
   const ink = colorFor('var(--ink-soft)');
   if(window._p14a) window._p14a.destroy(); if(window._p14b) window._p14b.destroy();
   if(el1) window._p14a = new Chart(el1.getContext('2d'),{type:'line',data:{labels:qd.map(x=>x.q),datasets:[{label:'ค่าเฉลี่ย % สำเร็จ',data:qd.map(x=>x.avg),borderColor:'#1f3a7a',backgroundColor:'rgba(31,58,122,.12)',fill:true,tension:.25,pointRadius:3.5,pointBackgroundColor:'#fff',pointBorderWidth:2}]},
-    options:{maintainAspectRatio:false,plugins:{legend:{display:false},datalabels:{display:true,align:'top',anchor:'end',color:ink,font:{size:10,weight:'600'},formatter:v=>v===null?'':v.toFixed(0)}},scales:{y:{min:0,max:110,ticks:{color:ink,stepSize:25}},x:{ticks:{color:ink,maxRotation:0,autoSkip:true}}}}});
-  if(el2) window._p14b = new Chart(el2.getContext('2d'),{type:'bar',data:{labels:qd.map(x=>x.q),datasets:STATUS_LEVELS.map(l=>({label:l.label,data:qd.map(x=>x.c[l.key]),backgroundColor:colorFor(l.color),borderWidth:0}))},
-    options:{maintainAspectRatio:false,plugins:{legend:{display:true,position:'bottom',labels:{boxWidth:10,boxHeight:10,color:ink,font:{size:10}}},datalabels:{display:false}},scales:{x:{stacked:true,ticks:{color:ink,maxRotation:0,autoSkip:true}},y:{stacked:true,ticks:{color:ink,precision:0}}}}});
+    options:{maintainAspectRatio:false,plugins:{legend:{display:false},datalabels:{display:true,align:'top',anchor:'end',color:ink,font:{size:10,weight:'600'},formatter:v=>v===null?'':v.toFixed(0)}},scales:{y:{min:0,max:110,border:{display:false},grid:{color:'rgba(120,130,160,.18)',borderDash:[4,4]},ticks:{color:ink,stepSize:25,font:{size:10.5}}},x:{grid:{display:false},ticks:{color:ink,maxRotation:0,autoSkip:true,font:{size:10.5}}}}}});
+  if(el2) window._p14b = new Chart(el2.getContext('2d'),{type:'bar',data:{labels:qd.map(x=>x.q),datasets:STATUS_LEVELS.map(l=>({label:l.label,data:qd.map(x=>x.c[l.key]),backgroundColor:colorFor(l.color),borderWidth:0,borderRadius:2,barPercentage:.7,categoryPercentage:.85}))},
+    options:{maintainAspectRatio:false,plugins:{legend:{display:true,position:'bottom',labels:{boxWidth:10,boxHeight:10,color:ink,font:{size:10}}},datalabels:{display:false}},scales:{x:{stacked:true,grid:{display:false},ticks:{color:ink,maxRotation:0,autoSkip:true,font:{size:10.5}}},y:{stacked:true,border:{display:false},grid:{color:'rgba(120,130,160,.18)',borderDash:[4,4]},ticks:{color:ink,precision:0,font:{size:10.5}}}}}});
 }
 
 function renderSuggest(){
@@ -3230,7 +3365,102 @@ function attachEvents(){
 }
 
 /* ================= INIT ================= */
+
+function p14Close(){ document.querySelectorAll('.p14-card.p14-full').forEach(c=>{ c.classList.remove('p14-full'); const sp=c.querySelector('.p14-zoom span'); if(sp) sp.textContent='ขยาย'; }); document.body.classList.remove('p14-lock'); }
+document.addEventListener('click',e=>{ const b=e.target.closest('[data-p14zoom]'); if(!b) return; const c=b.closest('.p14-card'); const on=!c.classList.contains('p14-full'); p14Close(); if(on){ c.classList.add('p14-full'); b.querySelector('span').textContent='ย่อ'; document.body.classList.add('p14-lock'); } setTimeout(()=>{ if(window._p14a) window._p14a.resize(); if(window._p14b) window._p14b.resize(); },60); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') p14Close(); });
+
+/* ================= CHAT + VISITORS ================= */
+const BACKEND = (typeof google!=='undefined' && google.script && google.script.run) ? 'gas' : 'local';
+const LS = {get:(k)=>{try{return localStorage.getItem(k);}catch(e){return null;}}, set:(k,v)=>{try{localStorage.setItem(k,v);}catch(e){}}};
+const SS = {get:(k)=>{try{return sessionStorage.getItem(k);}catch(e){return null;}}, set:(k,v)=>{try{sessionStorage.setItem(k,v);}catch(e){}}};
+function gasCall(fn,...a){ return new Promise((ok,no)=>google.script.run.withSuccessHandler(ok).withFailureHandler(no)[fn](...a)); }
+const API = {
+  hit(count){
+    if(BACKEND==='gas') return gasCall('api_hit',count);
+    let n=parseInt(LS.get('kr13_visits')||'0',10)||0; if(count){ n++; LS.set('kr13_visits',String(n)); } return Promise.resolve(n);
+  },
+  list(){
+    if(BACKEND==='gas') return gasCall('api_list');
+    try{ return Promise.resolve(JSON.parse(LS.get('kr13_chat')||'[]')); }catch(e){ return Promise.resolve([]); }
+  },
+  post(m){
+    if(BACKEND==='gas') return gasCall('api_post',m);
+    let a=[]; try{ a=JSON.parse(LS.get('kr13_chat')||'[]'); }catch(e){}
+    m.id='m_'+Date.now()+'_'+Math.random().toString(36).slice(2,7); m.ts=Date.now(); a.push(m); LS.set('kr13_chat',JSON.stringify(a.slice(-400))); return Promise.resolve(m);
+  }
+};
+let VISITS=null, CHAT=[], chatReplyTo=null, chatTimer=null;
+function visitHtml(){
+  const n = VISITS===null ? '…' : Number(VISITS).toLocaleString('en-US');
+  return `ข้อมูลจากรายงานผลการดำเนินงานตามแผนกลยุทธ์ มจธ. ฉบับที่ 13 · เข้าชม <b>${n}</b> ครั้ง`;
+}
+function refreshVisits(){ document.querySelectorAll('[data-visit]').forEach(el=>{ el.innerHTML=visitHtml(); }); }
+function chatTime(ts){ try{ return new Date(ts).toLocaleString('th-TH',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}); }catch(e){ return ''; } }
+function chatMsgHtml(m,root){
+  return `<div class="chat-msg"><div class="meta"><b>${escapeHtml(m.name||'ผู้เยี่ยมชม')}</b><time>${chatTime(m.ts)}</time></div><div class="txt">${escapeHtml(m.text)}</div>${root?`<button type="button" class="rp" data-chat-reply="${escapeHtml(m.id)}">ตอบกลับ</button>`:''}</div>`;
+}
+function renderChatList(){
+  const box=document.getElementById('chat-list'); if(!box) return;
+  const atBottom = box.scrollHeight-box.scrollTop-box.clientHeight<60;
+  const roots=CHAT.filter(m=>!m.parent), kids={}; CHAT.filter(m=>m.parent).forEach(m=>{ (kids[m.parent]=kids[m.parent]||[]).push(m); });
+  box.innerHTML = roots.length ? roots.map(m=>`<div>${chatMsgHtml(m,true)}${(kids[m.id]||[]).length?`<div class="chat-replies">${kids[m.id].map(r=>chatMsgHtml(r,false)).join('')}</div>`:''}</div>`).join('')
+    : '<div class="chat-empty">ยังไม่มีความคิดเห็น<br>พิมพ์คำถามหรือข้อเสนอแนะเกี่ยวกับแผนกลยุทธ์ฉบับที่ 13 ได้ที่ช่องด้านล่าง</div>';
+  if(atBottom) box.scrollTop=box.scrollHeight;
+  const c=document.getElementById('chat-cnt'); if(c){ c.textContent=CHAT.length>99?'99+':CHAT.length; c.style.display=CHAT.length?'flex':'none'; }
+}
+function loadChat(){ return API.list().then(a=>{ CHAT=(a||[]).slice().sort((x,y)=>x.ts-y.ts); renderChatList(); }).catch(()=>{}); }
+function setReplyTo(id){
+  chatReplyTo=id||null; const r=document.getElementById('chat-rto'); if(!r) return;
+  const m=CHAT.find(x=>x.id===id);
+  r.classList.toggle('on',!!m); r.firstElementChild.textContent = m ? 'ตอบกลับ '+(m.name||'ผู้เยี่ยมชม')+': '+m.text.slice(0,40)+(m.text.length>40?'…':'') : '';
+  if(m) document.getElementById('chat-text').focus();
+}
+function sendChat(){
+  const nameEl=document.getElementById('chat-name'), textEl=document.getElementById('chat-text'), btn=document.getElementById('chat-send');
+  const text=textEl.value.trim(); if(!text||btn.disabled) return;
+  const name=(nameEl.value.trim()||'ผู้เยี่ยมชม').slice(0,40); LS.set('kr13_chat_name',nameEl.value.trim());
+  btn.disabled=true;
+  API.post({name,text:text.slice(0,600),parent:chatReplyTo}).then(()=>{ textEl.value=''; setReplyTo(null); return loadChat(); }).then(()=>{ const b=document.getElementById('chat-list'); b.scrollTop=b.scrollHeight; })
+    .catch(()=>{ alert('ส่งข้อความไม่สำเร็จ กรุณาลองใหม่'); }).then(()=>{ btn.disabled=false; });
+}
+function toggleChat(open){
+  const p=document.getElementById('chat-panel'); if(!p) return;
+  const on = open===undefined ? !p.classList.contains('open') : open;
+  p.classList.toggle('open',on); document.getElementById('chat-fab').setAttribute('aria-expanded',on);
+  clearInterval(chatTimer);
+  if(on){ loadChat().then(()=>{ const b=document.getElementById('chat-list'); b.scrollTop=b.scrollHeight; }); chatTimer=setInterval(loadChat,20000); }
+}
+function initChat(){
+  const sp='<svg class="spark" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1l2.4 7.1L22 10l-7.6 2.9L12 20l-2.4-7.1L2 10l7.6-1.9z"/></svg>';
+  const wrap=document.createElement('div');
+  wrap.innerHTML=`<button type="button" class="chat-fab" id="chat-fab" aria-label="ถาม-ตอบและแสดงความคิดเห็น" aria-expanded="false" title="ถาม-ตอบ / แสดงความคิดเห็น">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M8 7V5.5A1.5 1.5 0 0 1 9.5 4h9A1.5 1.5 0 0 1 20 5.5v6a1.5 1.5 0 0 1-1.5 1.5H17"/><path d="M3 9.5A1.5 1.5 0 0 1 4.5 8h9A1.5 1.5 0 0 1 15 9.5v6a1.5 1.5 0 0 1-1.5 1.5H9l-3.5 3v-3h-1A1.5 1.5 0 0 1 3 15.5z"/><path d="M7 12.5h5"/></svg><span class="cnt" id="chat-cnt" style="display:none"></span></button>
+  <div class="chat-panel" id="chat-panel" role="dialog" aria-label="ถาม-ตอบและแสดงความคิดเห็น">
+    <div class="chat-hd"><div><b>ถาม-ตอบ / ความคิดเห็น</b><small>แผนกลยุทธ์ มจธ. ฉบับที่ 13</small></div><button type="button" id="chat-close" aria-label="ปิด">✕</button></div>
+    <div class="chat-list" id="chat-list"></div>
+    <div class="chat-ft">
+      <div class="rto" id="chat-rto"><span></span><button type="button" id="chat-rto-x" aria-label="ยกเลิกการตอบกลับ">✕</button></div>
+      <input id="chat-name" maxlength="40" placeholder="ชื่อ (ไม่ระบุก็ได้)" autocomplete="name">
+      <div class="row"><textarea id="chat-text" maxlength="600" placeholder="พิมพ์คำถามหรือความคิดเห็น (Enter = ส่ง, Shift+Enter = ขึ้นบรรทัดใหม่)"></textarea><button type="button" class="send" id="chat-send">ส่ง</button></div>
+    </div></div>`;
+  while(wrap.firstChild) document.body.appendChild(wrap.firstChild);
+  document.getElementById('chat-name').value=LS.get('kr13_chat_name')||'';
+  document.getElementById('chat-fab').addEventListener('click',()=>toggleChat());
+  document.getElementById('chat-close').addEventListener('click',()=>toggleChat(false));
+  document.getElementById('chat-send').addEventListener('click',sendChat);
+  document.getElementById('chat-rto-x').addEventListener('click',()=>setReplyTo(null));
+  document.getElementById('chat-text').addEventListener('keydown',e=>{ e.stopPropagation(); if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){ e.preventDefault(); sendChat(); } });
+  document.getElementById('chat-name').addEventListener('keydown',e=>e.stopPropagation());
+  document.getElementById('chat-list').addEventListener('click',e=>{ const b=e.target.closest('[data-chat-reply]'); if(b) setReplyTo(b.dataset.chatReply); });
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ const p=document.getElementById('chat-panel'); if(p&&p.classList.contains('open')) toggleChat(false); } });
+  const counted = SS.get('kr13_counted')==='1'; SS.set('kr13_counted','1');
+  API.hit(!counted).then(n=>{ VISITS=n; refreshVisits(); }).catch(()=>{});
+  loadChat();
+}
+
 render();
+initChat();
 })();
 
 
@@ -3265,10 +3495,12 @@ document.addEventListener('click',function(e){
 </script>
 <script id="protect-js">
 (function(){
-  var stop=function(e){ e.preventDefault(); e.stopPropagation(); return false; };
+  var inp=function(e){ var t=e.target; return t&&t.tagName&&/^(INPUT|TEXTAREA)$/.test(t.tagName); };
+  var stop=function(e){ if(inp(e)&&e.type!=='dragstart'){ return; } e.preventDefault(); e.stopPropagation(); return false; };
   ['contextmenu','copy','cut','dragstart','selectstart'].forEach(function(t){ document.addEventListener(t,stop,true); });
   document.addEventListener('keydown',function(e){
     var k=(e.key||'').toLowerCase(), c=e.ctrlKey||e.metaKey;
+    if(inp(e)&&c&&['a','x'].indexOf(k)>-1){ return; }
     if(e.key==='F12' || (c && ['c','x','a','s','p','u'].indexOf(k)>-1) || (c && e.shiftKey && ['i','j','c','k'].indexOf(k)>-1) || (e.metaKey && e.altKey && ['i','j','u','c'].indexOf(k)>-1)){ stop(e); }
   },true);
   document.addEventListener('copy',function(e){ if(e.clipboardData) e.clipboardData.setData('text/plain',''); },true);
