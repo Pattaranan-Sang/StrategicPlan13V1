@@ -1101,6 +1101,17 @@ body.p14-lock .chat-fab{display:none;}
 .p14-hmt .avc{box-shadow:0 1px 2px rgba(20,33,61,.1);}
 .p14-lg i{border-radius:50%;}
 .p14-card.p14-full .p14-hmt .cell{width:36px;height:36px;font-size:13px;}
+.p14-tbl:not(.p14-hmt) td.nm{min-width:220px;}
+
+.p14-tbl td.pr{text-align:center;width:44px;} .p14-rank{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:#e6ecfa;color:#1f3a7a;font-weight:700;font-size:12px;} html.dark-theme .p14-rank{background:#26345e;color:#cfd9ff;}
+.p14-tbl tr.sec td{position:static;background-color:var(--surface);background-image:linear-gradient(90deg,rgba(255,122,26,.16),rgba(255,122,26,.02) 80%);padding:8px 10px;border-bottom:0;border-radius:10px;}
+.p14-tbl tr.sec b{color:var(--navy-900);font-size:13px;margin-right:10px;} html.dark-theme .p14-tbl tr.sec b{color:var(--ink);}
+.p14-tbl tr.sec span{color:var(--ink-soft);font-size:11.5px;} .p14-tbl tr.sec em{float:right;font-style:normal;font-weight:700;font-size:11.5px;color:#e8590c;}
+.p14-tbl:not(.p14-hmt) th{background:var(--surface) !important;}
+
+.p14-tbl tr.sec{cursor:pointer;} .p14-tbl tr.sec .chev{display:inline-block;font-style:normal;margin-right:8px;transition:transform .15s;color:#e8590c;font-size:14px;} .p14-tbl tr.sec.col .chev{transform:rotate(-90deg);}
+.p14-tbl tr.sec:hover td{background-image:linear-gradient(90deg,rgba(255,122,26,.26),rgba(255,122,26,.05) 80%);} .p14-tbl tr.sec:focus-visible td{outline:2px solid #e8590c;}
+.p14-tbl tr.it.hid{display:none;}
 </style>
 
 
@@ -3030,6 +3041,7 @@ function signalHtml(k,q){
 }
 
 /* ================= สรุปผู้บริหาร / ประเมินแผน 13 → 14 ================= */
+const P14_CP = ['Q4-2566','Q4-2567','Q4-2568','Q3-2569'];
 const P14_MIRROR = {'SO2-KR1':'1.2','SO3-KR1':'4.1','SO4-KR1':'5.1','SO6-KR1':'3.1','SO6-KR2':'3.2','SO6-KR5':'3.3','SO6-KR6':'2.1'};
 const P14_REC = {
   raise:{label:'ไปต่อ · ยกระดับเป้า', cls:'raise'},
@@ -3073,13 +3085,28 @@ function p14Metrics(k){
   if(zeros>=1) dq.push('มีค่า 0% '+zeros+' ไตรมาส (รอยืนยันที่มาของข้อมูล)');
   if(diff>=1) dq.push('ผลจริงไม่ตรงสูตร '+diff+' ไตรมาส');
   if(ratio!==null && ratio>=3) dq.push('ผลจริงสูงกว่าเป้า ~'+ratio.toFixed(1)+' เท่า (เป้าอาจต่ำเกินไปหรือหน่วยไม่ตรงกัน)');
-  const serious = perf==='nodata' || diff>=2 || zeros>=3 || trailingNA>=3 || (ratio!==null && ratio>=5);
+  /* ===== ประเมินข้อเสนอแผน 14 จาก 4 จุดประเมิน: Q4-2566, Q4-2567, Q4-2568, Q3-2569 ===== */
+  const cp = P14_CP.map(q=>{ const r=rec.quarters[q]; return (r && r.pct!==null && r.pct!==undefined && !isNaN(r.pct)) ? r.pct : null; });
+  const cpV = cp.filter(v=>v!==null), cpN = cpV.length, cpAvg = mean(cpV), cpReached = cpV.filter(v=>v>=99.995).length;
+  const cpLast = cp[cp.length-1];
+  let cpPrev=null; for(let i=cp.length-2;i>=0;i--){ if(cp[i]!==null){ cpPrev=cp[i]; break; } }
+  const cpDelta = (cpLast!==null && cpPrev!==null) ? cpLast-cpPrev : null;
+  const cpZeros = cpV.filter(v=>v===0).length;
+  let cpDiff=0; P14_CP.forEach(q=>{ try{ const fc=formulaCheck(k,q); if(fc && fc.s==='diff') cpDiff++; }catch(e){} });
+  let cpPerf; if(cpN<2) cpPerf='nodata'; else if(cpAvg>=90 && cpLast!==null && cpLast>=90) cpPerf='strong'; else if(cpAvg>=80) cpPerf='ok'; else cpPerf='weak';
+  const cdq=[];
+  if(cpN<2) cdq.push('มีผลเพียง '+cpN+' จาก 4 จุดประเมิน');
+  if(cpLast===null) cdq.push('ยังไม่มีผล Q3-2569 (อยู่ระหว่างรวบรวมข้อมูล)');
+  if(cpZeros>=1) cdq.push('มีค่า 0% '+cpZeros+' จุดประเมิน (รอยืนยันที่มาของข้อมูล)');
+  if(cpDiff>=1) cdq.push('ผลจริงไม่ตรงสูตร '+cpDiff+' จุดประเมิน');
+  if(ratio!==null && ratio>=3) cdq.push('ผลจริงสูงกว่าเป้า ~'+ratio.toFixed(1)+' เท่า (เป้าอาจต่ำเกินไปหรือหน่วยไม่ตรงกัน)');
+  const serious = cpN<2 || cpLast===null || cpDiff>=2 || cpZeros>=2 || (ratio!==null && ratio>=5);
   let rec14;
   if(serious) rec14='refine';
-  else if(perf==='strong' && reached/n>=0.7) rec14='raise';
-  else if(perf==='strong' || perf==='ok') rec14='keep';
+  else if(cpPerf==='strong' && cpReached/cpN>=0.75) rec14='raise';
+  else if(cpPerf==='strong' || cpPerf==='ok') rec14='keep';
   else rec14='fix';
-  return {k, rec, ser, n, vmin, vmax, avg:mean(vals), last, lastQ, recentAvg, delta, reached, trailingNA, zeros, diff, a, t, ratio, latestV, perf, dq, rec14};
+  return {k, rec, ser, n, vmin, vmax, avg:mean(vals), last, lastQ, recentAvg, delta, reached, trailingNA, zeros, diff, a, t, ratio, latestV, perf, dq, rec14, cp, cpN, cpAvg, cpReached, cpLast, cpDelta, cpPerf, cdq};
 }
 function p14All(){
   const keys = Object.keys(DATA.krs).filter(k=>!P14_MIRROR[k]);
@@ -3101,6 +3128,13 @@ function p14Reason(m){
   if(m.recentAvg!==null) parts.push(`4 ไตรมาสล่าสุด ${m.recentAvg.toFixed(1)}%`);
   if(m.delta!==null && Math.abs(m.delta)>5) parts.push(`${m.delta>0?'ดีขึ้น':'ลดลง'} ${Math.abs(m.delta).toFixed(1)} pp เทียบช่วงก่อนหน้า`);
   return parts.concat(m.dq).join(' · ');
+}
+function p14ReasonCp(m){
+  const parts=[];
+  if(m.cpN>0) parts.push(`ถึงเป้า ${m.cpReached}/${m.cpN} จุดประเมิน`);
+  if(m.cpAvg!==null) parts.push(`เฉลี่ย 4 จุด ${m.cpAvg.toFixed(1)}%`);
+  if(m.cpDelta!==null && Math.abs(m.cpDelta)>5) parts.push(`${m.cpDelta>0?'ดีขึ้น':'ลดลง'} ${Math.abs(m.cpDelta).toFixed(1)} pp จาก Q4-2568 ถึง Q3-2569`);
+  return parts.concat(m.cdq).join(' · ');
 }
 function p14Quarterly(all){
   return DATA.quarter_order.map((q,i)=>{
@@ -3163,7 +3197,7 @@ function renderPlan14(){
         <div class="p14-card"><div class="p14-hmh"><h3>ค่าเฉลี่ย % สำเร็จของทุกตัวชี้วัดรายไตรมาส</h3><button type="button" class="p14-zoom" data-p14zoom title="ขยายภาพใหญ่" aria-label="ขยายภาพใหญ่"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg><span>ขยาย</span></button></div><div class="p14-chart"><canvas id="p14-line"></canvas></div></div>
         <div class="p14-card"><div class="p14-hmh"><h3>จำนวนตัวชี้วัดตามสถานะรายไตรมาส</h3><button type="button" class="p14-zoom" data-p14zoom title="ขยายภาพใหญ่" aria-label="ขยายภาพใหญ่"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg><span>ขยาย</span></button></div><div class="p14-chart"><canvas id="p14-bar"></canvas></div></div>
       </div>
-      <div class="p14-card"><div class="p14-hmh"><h3>แผนที่ผลการดำเนินงานรายตัวชี้วัด × ไตรมาส</h3><div class="p14-lg">${lg}<span class="lg" style="opacity:.8">✓ = ถึงเป้า</span></div><button type="button" class="p14-zoom" data-p14zoom title="ขยายภาพใหญ่" aria-label="ขยายภาพใหญ่"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg><span>ขยาย</span></button></div>
+      <div class="p14-card"><div class="p14-hmh"><h3>ความสำเร็จจากการดำเนินงาน × รายไตรมาส</h3><div class="p14-lg">${lg}<span class="lg" style="opacity:.8">✓ = ถึงเป้า</span></div><button type="button" class="p14-zoom" data-p14zoom title="ขยายภาพใหญ่" aria-label="ขยายภาพใหญ่"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg><span>ขยาย</span></button></div>
         <div class="p14-scroll"><table class="p14-tbl p14-hmt"><thead>${yrRow}${qRow}</thead><tbody>${rows}</tbody></table></div></div>
     </div>`;
   } else if(tab==='gap'){
@@ -3196,22 +3230,32 @@ function renderPlan14(){
     const f = state.p14f;
     const chips = [['all','ทั้งหมด ('+list.length+')'],...Object.keys(P14_REC).map(k=>[k,P14_REC[k].label+' ('+rc[k]+')'])].map(([k,t])=>`<button type="button" class="sub-tab${f===k?' active':''}" data-p14f="${k}">${t}</button>`).join('');
     const order = {raise:0,keep:1,fix:2,refine:3};
-    const rows = list.filter(m=>f==='all'||m.rec14===f).sort((a,b)=>order[a.rec14]-order[b.rec14]).map(m=>`<tr>
+    const secOf = m=> /^g\d/.test(m.rec.group) ? 'v' : (/^so\d/.test(m.rec.group) ? 's' : 'e');
+    const secs = [['v','Strategic Vision','ตัวชี้วัดวิสัยทัศน์เชิงกลยุทธ์'],['s','Strategic Objective','ตัวชี้วัดวัตถุประสงค์เชิงกลยุทธ์ (SO1–SO6)'],['e','Enabling Factors','ตัวชี้วัดปัจจัยสนับสนุน']];
+    const filtered = list.filter(m=>f==='all'||m.rec14===f);
+    const rowHtml = (m,rank)=>`<tr>
+      <td class="pr"><span class="p14-rank">${rank}</span></td>
       <td class="nm">${p14Name(m)}</td>
-      <td>${p14Chip(statusOf(m.last),m.last)}<br><small style="color:var(--ink-soft)">${m.lastQ||''}</small></td>
-      <td>${p14Pct(m.avg)}</td><td>${m.reached}/${m.n}</td><td style="white-space:nowrap">${p14Arrow(m.delta)}</td>
+      ${m.cp.map(v=>`<td style="text-align:center">${v===null?'<span style="color:var(--ink-soft)">N/A</span>':p14Chip(statusOf(v),v)}</td>`).join('')}
+      <td style="text-align:center;font-weight:600">${p14Pct(m.cpAvg)}</td><td style="white-space:nowrap">${p14Arrow(m.cpDelta)}</td>
       <td><span class="p14-chip ${P14_REC[m.rec14].cls}">${P14_REC[m.rec14].label}</span></td>
-      <td style="min-width:240px;line-height:1.4">${p14Reason(m)}</td></tr>`).join('');
+      <td style="min-width:190px;line-height:1.4">${p14ReasonCp(m)}</td></tr>`;
+    const rows = secs.map(([sk,t,sub])=>{
+      const ms = filtered.filter(m=>secOf(m)===sk);
+      if(!ms.length) return '';
+      const col = !!(state.p14c||{})[sk];
+      return `<tr class="sec${col?' col':''}" data-p14sec="${sk}" tabindex="0" role="button" aria-expanded="${!col}"><td colspan="10"><i class="chev">▾</i><b>${t}</b><span>${sub}</span><em>${ms.length} ตัว</em></td></tr>` + ms.map((m,ix)=>rowHtml(m,ix+1).replace('<tr>',`<tr class="it sec-${sk}${col?' hid':''}">`)).join('');
+    }).join('');
     body = `<div class="p14-card">
       <div class="p14-filter">${chips}</div>
-      <p class="p14-note">เกณฑ์: ยกระดับเป้า = เฉลี่ย 4 ไตรมาสล่าสุด ≥90% และผ่านเป้า ≥70% ของไตรมาส · คงเป้า = ≥80% · เร่งรัดแผนปฏิบัติ = &lt;80% · ทบทวนนิยาม/ข้อมูล = ข้อมูลน้อยกว่า 3 ไตรมาส, N/A ล่าสุดติดกัน ≥3, ค่า 0% ≥3, ไม่ตรงสูตร ≥2 หรือผลจริงเกินเป้า ≥5 เท่า</p>
-      <div class="p14-scroll"><table class="p14-tbl"><thead><tr><th>ตัวชี้วัด</th><th>ผลล่าสุด</th><th>เฉลี่ยทุกไตรมาส</th><th>ผ่านเป้า</th><th>แนวโน้ม</th><th>ข้อเสนอแผน 14</th><th>เหตุผลประกอบ</th></tr></thead><tbody>${rows}</tbody></table></div>
+      <p class="p14-note">ประเมินจาก 4 จุด: ปลายปี 2566, 2567, 2568 และไตรมาสล่าสุด Q3-2569 · เรียงตามลำดับตัวชี้วัด (1.1, 1.2, …) แยกหมวด Vision / SO / EF คลิกหัวหมวดเพื่อย่อ-ขยาย · เกณฑ์: ยกระดับเป้า = เฉลี่ย 4 จุด ≥90% ผล Q3-2569 ≥90% และถึงเป้า ≥75% ของจุดที่มีผล · คงเป้า = เฉลี่ย ≥80% · เร่งรัดแผนปฏิบัติ = &lt;80% · ทบทวนนิยาม/ข้อมูล = มีผลน้อยกว่า 2 จุด, ไม่มีผล Q3-2569, ค่า 0% ≥2 จุด, ไม่ตรงสูตร ≥2 จุด หรือผลจริงเกินเป้า ≥5 เท่า</p>
+      <div class="p14-scroll"><table class="p14-tbl"><thead><tr><th style="text-align:center;width:44px">#</th><th>ตัวชี้วัด</th>${P14_CP.map(q=>`<th style="text-align:center">${q}</th>`).join('')}<th style="text-align:center">เฉลี่ย 4 จุด</th><th>แนวโน้ม</th><th>ข้อเสนอแผน 14</th><th>เหตุผลประกอบ</th></tr></thead><tbody>${rows}</tbody></table></div>
     </div>`;
   }
   return `<section class="p14">
     <div class="p14-head"><div><h2 class="p14-title">ภาพรวม · สรุปผู้บริหารและประเมินแผน 13 สู่แผน 14</h2><div class="p14-sub">วิเคราะห์ทุกไตรมาส ${DATA.quarter_order[0]} – ${L} · Gap จุดแข็ง จุดอ่อน และข้อเสนอตัวชี้วัดสำหรับแผน 14</div></div></div>
     ${kpis}${ins}
-    <div class="p14-tabs">${tabs}<span class="p14-auto">ข้อเสนอสร้างอัตโนมัติจากเกณฑ์ตัวเลขทุกไตรมาส ใช้ประกอบการพิจารณาร่วมกับบริบทเชิงนโยบาย</span></div><div class="p14-body">${body}</div>
+    <div class="p14-tabs">${tabs}<span class="p14-auto">${state.p14tab==='plan'?'ข้อเสนอสร้างอัตโนมัติจากผล Q4-2566, Q4-2567, Q4-2568 และ Q3-2569':'ข้อเสนอสร้างอัตโนมัติจากเกณฑ์ตัวเลข ใช้ประกอบการพิจารณาร่วมกับบริบทเชิงนโยบาย'}</span></div><div class="p14-body">${body}</div>
   </section>`;
 }
 function drawPlan14Charts(){
@@ -3219,10 +3263,11 @@ function drawPlan14Charts(){
   const {list} = p14All(), qd = p14Quarterly(list);
   const el1 = document.getElementById('p14-line'), el2 = document.getElementById('p14-bar');
   const ink = colorFor('var(--ink-soft)');
+  const _qv = qd.filter(x=>x.avg!==null), qAvg = _qv.reduce((a,x)=>a+x.avg,0)/_qv.length;
   if(window._p14a) window._p14a.destroy(); if(window._p14b) window._p14b.destroy();
-  if(el1) window._p14a = new Chart(el1.getContext('2d'),{type:'line',data:{labels:qd.map(x=>x.q),datasets:[{label:'ค่าเฉลี่ย % สำเร็จ',data:qd.map(x=>x.avg),borderColor:'#1f3a7a',backgroundColor:'rgba(31,58,122,.12)',fill:true,tension:.25,pointRadius:3.5,pointBackgroundColor:'#fff',pointBorderWidth:2}]},
-    options:{maintainAspectRatio:false,plugins:{legend:{display:false},datalabels:{display:true,align:'top',anchor:'end',color:ink,font:{size:10,weight:'600'},formatter:v=>v===null?'':v.toFixed(0)}},scales:{y:{min:0,max:110,border:{display:false},grid:{color:'rgba(120,130,160,.18)',borderDash:[4,4]},ticks:{color:ink,stepSize:25,font:{size:10.5}}},x:{grid:{display:false},ticks:{color:ink,maxRotation:0,autoSkip:true,font:{size:10.5}}}}}});
-  if(el2) window._p14b = new Chart(el2.getContext('2d'),{type:'bar',data:{labels:qd.map(x=>x.q),datasets:STATUS_LEVELS.map(l=>({label:l.label,data:qd.map(x=>x.c[l.key]),backgroundColor:colorFor(l.color),borderWidth:0,borderRadius:2,barPercentage:.7,categoryPercentage:.85}))},
+  if(el1) window._p14a = new Chart(el1.getContext('2d'),{type:'line',data:{labels:qd.map(x=>x.q),datasets:[{label:'ค่าเฉลี่ย % สำเร็จ',data:qd.map(x=>x.avg),borderColor:'#1f3a7a',backgroundColor:'rgba(31,58,122,.12)',fill:true,tension:.25,pointRadius:3.5,pointBackgroundColor:'#fff',pointBorderWidth:2,order:1},{label:'เฉลี่ยทุกไตรมาส',data:qd.map(()=>qAvg),borderColor:'#ff7a1a',borderDash:[6,5],borderWidth:2,pointRadius:0,pointHoverRadius:0,fill:false,tension:0,order:2,datalabels:{display:c=>c.dataIndex===qd.length-1,align:'right',anchor:'center',offset:4,clip:false,color:'#fff',backgroundColor:'#ff7a1a',borderRadius:10,padding:{top:2,bottom:2,left:8,right:8},font:{size:10.5,weight:'700'},formatter:()=>'เฉลี่ย '+qAvg.toFixed(1)+'%'}}]},
+    options:{maintainAspectRatio:false,layout:{padding:{right:84,top:6}},plugins:{legend:{display:false},datalabels:{display:true,align:'top',anchor:'end',color:ink,font:{size:10,weight:'600'},formatter:v=>v===null?'':v.toFixed(0)}},scales:{y:{min:0,max:110,border:{display:false},grid:{color:'rgba(120,130,160,.18)',borderDash:[4,4]},ticks:{color:ink,stepSize:25,font:{size:10.5}}},x:{grid:{display:false},ticks:{color:ink,maxRotation:0,autoSkip:true,font:{size:10.5}}}}}});
+  if(el2) window._p14b = new Chart(el2.getContext('2d'),{type:'bar',data:{labels:qd.map(x=>x.q),datasets:STATUS_LEVELS.map(l=>({label:l.label,data:qd.map(x=>x.c[l.key]),backgroundColor:colorFor(l.color),borderWidth:0,borderRadius:2,barPercentage:.7,categoryPercentage:.85,datalabels:{display:c=>{ const v=c.dataset.data[c.dataIndex]; if(!v) return false; const y=c.chart.scales.y; return Math.abs(y.getPixelForValue(0)-y.getPixelForValue(v))>=12; },anchor:'center',align:'center',color:onFill(l.key),font:{size:10.5,weight:'700'},formatter:v=>v}}))},
     options:{maintainAspectRatio:false,plugins:{legend:{display:true,position:'bottom',labels:{boxWidth:10,boxHeight:10,color:ink,font:{size:10}}},datalabels:{display:false}},scales:{x:{stacked:true,grid:{display:false},ticks:{color:ink,maxRotation:0,autoSkip:true,font:{size:10.5}}},y:{stacked:true,border:{display:false},grid:{color:'rgba(120,130,160,.18)',borderDash:[4,4]},ticks:{color:ink,precision:0,font:{size:10.5}}}}}});
 }
 
@@ -3366,6 +3411,10 @@ function attachEvents(){
 
 /* ================= INIT ================= */
 
+
+function p14ToggleSec(tr){ const sk=tr.dataset.p14sec; state.p14c=state.p14c||{}; const col=!state.p14c[sk]; state.p14c[sk]=col; tr.classList.toggle('col',col); tr.setAttribute('aria-expanded',!col); document.querySelectorAll('tr.it.sec-'+sk).forEach(r=>r.classList.toggle('hid',col)); }
+document.addEventListener('click',e=>{ const tr=e.target.closest('tr[data-p14sec]'); if(tr) p14ToggleSec(tr); });
+document.addEventListener('keydown',e=>{ if((e.key==='Enter'||e.key===' ')&&e.target.matches&&e.target.matches('tr[data-p14sec]')){ e.preventDefault(); p14ToggleSec(e.target); } });
 function p14Close(){ document.querySelectorAll('.p14-card.p14-full').forEach(c=>{ c.classList.remove('p14-full'); const sp=c.querySelector('.p14-zoom span'); if(sp) sp.textContent='ขยาย'; }); document.body.classList.remove('p14-lock'); }
 document.addEventListener('click',e=>{ const b=e.target.closest('[data-p14zoom]'); if(!b) return; const c=b.closest('.p14-card'); const on=!c.classList.contains('p14-full'); p14Close(); if(on){ c.classList.add('p14-full'); b.querySelector('span').textContent='ย่อ'; document.body.classList.add('p14-lock'); } setTimeout(()=>{ if(window._p14a) window._p14a.resize(); if(window._p14b) window._p14b.resize(); },60); });
 document.addEventListener('keydown',e=>{ if(e.key==='Escape') p14Close(); });
